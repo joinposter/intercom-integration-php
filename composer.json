@@ -1,5 +1,6 @@
 {
     "name": "joinposter/intercom-integration-php",
+    "version": "1.0.0",
     "description": "Intercom API client built on top of Guzzle 6 for Poster POS",
     "keywords": [
         "api",
