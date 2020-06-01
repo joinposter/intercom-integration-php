@@ -1,6 +1,6 @@
 {
-    "name": "intercom/intercom-php",
-    "description": "Intercom API client built on top of Guzzle 6",
+    "name": "joinposter/intercom-integration-php",
+    "description": "Intercom API client built on top of Guzzle 6 for Poster POS",
     "keywords": [
         "api",
         "guzzle",
@@ -10,14 +10,10 @@
     "license": "Apache-2.0",
     "authors": [
         {
-            "name": "Intercom Platform Team",
-            "homepage": "https://www.intercom.com"
+            "name": "Intercom Platform Team, Poster POS dev",
+            "homepage": ""
         }
     ],
-    "support": {
-        "issues": "https://github.com/intercom/intercom-php/issues",
-        "source": "https://github.com/intercom/intercom-php"
-    },
     "autoload": {
         "psr-4": {
             "Intercom\\": [
