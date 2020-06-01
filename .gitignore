@@ -1,0 +1,18 @@
+# OSX
+.DS_Store
+
+# PhpStorm
+/.idea
+
+# Composer
+/vendor
+composer.lock
+composer.phar
+
+# PhpUnit
+phpunit.phar
+phpunit.xml
+
+# Extras
+/build
+*.swp
