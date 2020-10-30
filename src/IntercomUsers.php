@@ -17,7 +17,7 @@ class IntercomUsers extends IntercomResource
      */
     public function create(array $options)
     {
-        return $this->client->post("users", $options);
+        return $this->client->post("contacts", $options);
     }
 
     /**
@@ -43,7 +43,7 @@ class IntercomUsers extends IntercomResource
      */
     public function getUsers(array $options)
     {
-        return $this->client->get('users', $options);
+        return $this->client->get('contacts', $options);
     }
 
     /**
@@ -124,6 +124,6 @@ class IntercomUsers extends IntercomResource
      */
     public function userPath(string $id)
     {
-        return 'users/' . $id;
+        return 'contacts/' . $id;
     }
 }
