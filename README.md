@@ -53,6 +53,51 @@ For more information about API Versioning, please check the [API Versioning Docu
 
 ## Users
 
+**Important**: Not all the resources supported by this API are supported by all API versions. See the notes below or the [API Reference](https://developers.intercom.com/intercom-api-reference/reference) for more information about the resources supported by each API version.
+
+## Contacts
+
+This resource is only available in API Versions 2.0 and above
+
+```php
+/** Create a contact */
+$client->contacts->create([
+    "type" => "user",
+    "email" => "test@example.com",
+    "custom_attributes" => ['foo' => 'bar']
+]);
+
+/** Update a contact */
+$client->contacts->update("570680a8a1bcbca8a90001b9", [
+    "email" => "test@example.com",
+    "custom_attributes" => ['foo' => 'bar']
+]);
+
+/** Permanently delete a contact */
+$client->contacts->deleteContact("570680a8a1bcbca8a90001b9");
+
+/** Get a contact by ID */
+$client->contacts->getContact("570680a8a1bcbca8a90001b9");
+
+/** Search for contacts */
+$query = ['field' => 'name', 'operator' => '=', 'value' => 'Alice'];
+$client->contacts->search([
+    "query" => $query,
+    "sort" => ["field" => "name", "order" => "ascending"],
+    "pagination" => ["per_page" => 10]
+]);
+
+/** Get next page of conversation search results */
+$client->contacts->nextSearch($query, $response->pages);
+
+/** List all contacts */
+$client->contacts->getContacts([]);
+```
+
+## Users
+
+This resource is only available in API Versions 1.0 to 1.4. Newer versions use the [Contacts](#contacts) resource instead.
+
 ```php
 /** Create a user */
 $client->users->create([
@@ -120,6 +165,8 @@ See [here](https://github.com/intercom/intercom-php#scroll) for more info on usi
 
 ## Leads
 
+This resource is only available in API Versions 1.0 to 1.4. Newer versions use the [Contacts](#contacts) resource instead.
+
 ```php
 /**
  * Create a lead
@@ -171,17 +218,6 @@ $client->leads->scrollLeads();
 ```
 
 See [here](https://github.com/intercom/intercom-php#scroll) for more info on using the scroll parameter
-
-## Customers
-
-```php
-/** Search for customers */
-$client->customers->search([
-    "query" => ['field' => 'name', 'operator' => '=', 'value' => 'Alice'],
-    "sort" => ["field" => "name", "order" => "ascending"],
-    "pagination" => ["per_page" => 10]
-]);
-```
 
 ## Visitors
 
@@ -282,15 +318,14 @@ $client->companies->create([
 ]);
 
 /**
- * Update a company (Note: This method is an alias to the create method.
- * In practice you can use create to update companies if you wish)
+ * Update a company
  */
 $client->companies->update([
     "name" => "foocorp",
     "id" => "3"
 ]);
 
-/** Creating or Update a company with custom attributes. */
+/** Create or update a company with custom attributes. */
 $client->companies->update([
     "name" => "foocorp",
     "id" => "3",
@@ -311,6 +346,18 @@ $client->companies->getCompanyUsers("531ee472cce572a6ec000006");
 
 /** List users belonging to a company by company_id */
 $client->companies->getCompanies(["type" => "user", "company_id" => "3"]);
+
+/**
+ * Add companies to a contact with IDs
+ * First parameter is contact ID, second is company ID
+ */
+$client->companies->attachContact("570680a8a1bcbca8a90001b9", "531ee472cce572a6ec000006");
+
+/**
+ * Detach company from contact
+ * First parameter is contact ID, second is company ID
+ */
+$client->companies->detachContact("570680a8a1bcbca8a90001b9", "531ee472cce572a6ec000006");
 
 ```
 
@@ -362,6 +409,17 @@ $client->conversations->getConversation("1234")
 $client->conversations->getConversation("1234", [
     "display_as" => "plaintext"
 ])
+
+/** Search for conversations (API version >= 2.0) */
+$query = ['field' => 'updated_at', 'operator' => '>', 'value' => '1560436784'];
+$client->conversations->search([
+    "query" => $query,
+    "sort" => ["field" => "updated_at", "order" => "ascending"],
+    "pagination" => ["per_page" => 10]
+]);
+
+/** Get next page of conversation search results (API version >= 2.0) */
+$client->conversations->nextSearch($query, $response->pages);
 
 /**
  * Reply to a conversation
@@ -440,7 +498,7 @@ Rate limit info is passed via the rate limit headers.
 You can access this information as follows:
 
 ```php
-$rate_limit = $intercom->getRateLimitDetails();
+$rate_limit = $client->getRateLimitDetails();
 print("{$rate_limit['remaining']} {$rate_limit['limit']} \n");
 print_r($rate_limit['reset_at']->format(DateTime::ISO8601));
 ```
@@ -465,6 +523,12 @@ You can grab the next page of results using the client:
 $client->nextPage($response->pages);
 ```
 
+In API versions 2.0 and above subsequent pages for listing contacts can be retreived with:
+
+```php
+$client->nextCursor($response->pages);
+```
+
 ## Scroll
 
 The first time you use the scroll API you can just send a simple GET request.
@@ -480,14 +544,14 @@ require "vendor/autoload.php";
 
 use Intercom\IntercomClient;
 
-$intercom = new IntercomClient(getenv('AT'), null);
-$resp = $intercom->users->scrollUsers([]);
+$client = new IntercomClient(getenv('AT'), null);
+$resp = $client->users->scrollUsers([]);
 $count = 1;
 echo "PAGE $count: " . sizeof($resp->users);
 echo "\n";
 while (!empty($resp->scroll_param) && sizeof($resp->users) > 0) {
     $count = ++$count;
-    $resp = $intercom->users->scrollUsers(["scroll_param" => $resp->scroll_param]);
+    $resp = $client->users->scrollUsers(["scroll_param" => $resp->scroll_param]);
     echo "PAGE $count: " . sizeof($resp->users);
     echo "\n";
 }
